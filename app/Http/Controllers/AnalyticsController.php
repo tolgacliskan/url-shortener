@@ -47,8 +47,10 @@ class AnalyticsController extends Controller
 
     public function index(Request $request): Response
     {
-        $start = CarbonImmutable::parse($request->start ?: now()->subDays(29))->startOfDay();
-        $end = CarbonImmutable::parse($request->end ?: now())->endOfDay();
+        $timezone = config('lua.timezone');
+
+        $start = CarbonImmutable::parse($request->start ?: now($timezone)->subDays(29), $timezone)->startOfDay();
+        $end = CarbonImmutable::parse($request->end ?: now($timezone), $timezone)->endOfDay();
 
         return Inertia::render('Analytics/Index', [
             'start' => $start->toDateString(),

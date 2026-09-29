@@ -8,6 +8,7 @@ import type { App, DefineComponent } from 'vue';
 import { createSSRApp, h } from 'vue';
 
 import { initializeTheme } from './composables/useAppearance';
+import date from './date';
 import {
     capturePageview,
     initializePostHog,
@@ -29,6 +30,10 @@ createInertiaApp({
         // lets the browser hydrate what the server sent rather than throw it
         // away and start over.
         const isServer = typeof window === 'undefined';
+
+        // Shared by the backend (lua.timezone) so every date and range is
+        // drawn in one zone, whatever the viewer's machine is set to.
+        date.setTimezone(props.initialPage.props.timezone as string);
 
         if (!isServer) {
             // Identify + workspace group + first pageview. The same hooks fire

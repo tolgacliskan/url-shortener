@@ -15,12 +15,14 @@ class EventController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        $start = Carbon::createFromFormat('Y-m-d', $request->start ? $request->start : now()->subDays(30)->format('Y-m-d'))->startOfDay();
-        $end = Carbon::createFromFormat('Y-m-d', $request->end ? $request->end : now()->format('Y-m-d'))->endOfDay();
+        $timezone = config('lua.timezone');
+
+        $start = Carbon::createFromFormat('Y-m-d', $request->start ?: now($timezone)->subDays(30)->format('Y-m-d'), $timezone)->startOfDay();
+        $end = Carbon::createFromFormat('Y-m-d', $request->end ?: now($timezone)->format('Y-m-d'), $timezone)->endOfDay();
 
         $query = LinkStat::where('workspace_id', $workspace->id)
             ->with('link:id,link')
-            ->whereBetween('created_at', [$start, $end])
+            ->whereBetween('created_at', [$start->copy()->utc(), $end->copy()->utc()])
             ->latest();
 
         $links = $query->paginate(config('lua.pagination.default'))->withQueryString();

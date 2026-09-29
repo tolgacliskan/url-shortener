@@ -57,6 +57,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | The zone dates are shown in and date ranges are drawn in. Storage stays
+    | UTC (app.timezone): changing that instead would write new rows in one
+    | zone next to old rows in another.
+    |
+    */
+
+    'timezone' => 'Europe/Istanbul',
+
+    /*
+    |--------------------------------------------------------------------------
     | Pagination
     |--------------------------------------------------------------------------
     |

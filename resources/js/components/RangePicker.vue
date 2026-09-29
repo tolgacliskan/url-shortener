@@ -64,67 +64,70 @@ const calRange = (start: dayjs.Dayjs, end: dayjs.Dayjs) => ({
     end: new CalendarDate(end.year(), end.month() + 1, end.date()),
 });
 
+// "Today" is today in the shared timezone, not on the viewer's machine.
+const today = () => dayjs().tz(date.getUserTimezone());
+
 type Preset = { label: string; getValue: () => { start: any; end: any } };
 
 const presetGroups: Preset[][] = [
     [
-        { label: 'Today', getValue: () => calRange(dayjs(), dayjs()) },
+        { label: 'Today', getValue: () => calRange(today(), today()) },
         {
             label: 'Yesterday',
             getValue: () =>
                 calRange(
-                    dayjs().subtract(1, 'day'),
-                    dayjs().subtract(1, 'day'),
+                    today().subtract(1, 'day'),
+                    today().subtract(1, 'day'),
                 ),
         },
     ],
     [
         {
             label: 'Last 7 days',
-            getValue: () => calRange(dayjs().subtract(6, 'day'), dayjs()),
+            getValue: () => calRange(today().subtract(6, 'day'), today()),
         },
         {
             label: 'Last 30 days',
-            getValue: () => calRange(dayjs().subtract(29, 'day'), dayjs()),
+            getValue: () => calRange(today().subtract(29, 'day'), today()),
         },
         {
             label: 'Last 3 months',
-            getValue: () => calRange(dayjs().subtract(3, 'month'), dayjs()),
+            getValue: () => calRange(today().subtract(3, 'month'), today()),
         },
         {
             label: 'Last 6 months',
-            getValue: () => calRange(dayjs().subtract(6, 'month'), dayjs()),
+            getValue: () => calRange(today().subtract(6, 'month'), today()),
         },
         {
             label: 'Last 12 months',
             getValue: () =>
-                calRange(dayjs().subtract(12, 'month').add(1, 'day'), dayjs()),
+                calRange(today().subtract(12, 'month').add(1, 'day'), today()),
         },
     ],
     [
         {
             label: 'This month',
             getValue: () =>
-                calRange(dayjs().startOf('month'), dayjs().endOf('month')),
+                calRange(today().startOf('month'), today().endOf('month')),
         },
         {
             label: 'Last month',
             getValue: () =>
                 calRange(
-                    dayjs().subtract(1, 'month').startOf('month'),
-                    dayjs().subtract(1, 'month').endOf('month'),
+                    today().subtract(1, 'month').startOf('month'),
+                    today().subtract(1, 'month').endOf('month'),
                 ),
         },
         {
             label: 'Year to date',
-            getValue: () => calRange(dayjs().startOf('year'), dayjs()),
+            getValue: () => calRange(today().startOf('year'), today()),
         },
         {
             label: 'Last year',
             getValue: () =>
                 calRange(
-                    dayjs().subtract(1, 'year').startOf('year'),
-                    dayjs().subtract(1, 'year').endOf('year'),
+                    today().subtract(1, 'year').startOf('year'),
+                    today().subtract(1, 'year').endOf('year'),
                 ),
         },
     ],

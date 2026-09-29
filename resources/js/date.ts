@@ -2,9 +2,15 @@ import dayjs from '@/dayjs';
 
 type DateInput = string | number | Date | null | undefined;
 
+let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 export default {
+    setTimezone(zone: string) {
+        timezone = zone;
+    },
+
     getUserTimezone() {
-        return Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return timezone;
     },
 
     formatDate(date: DateInput) {
@@ -12,7 +18,7 @@ export default {
     },
 
     formatDateTime(date: DateInput) {
-        return dayjs.utc(date).format('MMM D, YYYY h:mm A');
+        return dayjs.utc(date).tz(timezone).format('MMM D, YYYY h:mm A');
     },
 
     formatDateTimeForApi(date: DateInput) {

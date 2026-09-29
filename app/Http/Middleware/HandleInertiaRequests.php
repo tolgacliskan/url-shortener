@@ -36,6 +36,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'timezone' => config('lua.timezone'),
             'auth' => [
                 'user' => function () use ($request) {
                     if (! $request->user()) {

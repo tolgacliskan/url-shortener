@@ -63,12 +63,14 @@ class LinkController extends Controller
         $link = GetLink::execute($workspace, $id);
         abort_unless($link, 404);
 
-        $start = CarbonImmutable::parse($request->start ?: now()->subDays(29))->startOfDay();
-        $end = CarbonImmutable::parse($request->end ?: now())->endOfDay();
+        $timezone = config('lua.timezone');
+
+        $start = CarbonImmutable::parse($request->start ?: now($timezone)->subDays(29), $timezone)->startOfDay();
+        $end = CarbonImmutable::parse($request->end ?: now($timezone), $timezone)->endOfDay();
 
         $events = LinkStat::where('workspace_id', $workspace->id)
             ->where('link_id', $link->id)
-            ->whereBetween('created_at', [$start, $end])
+            ->whereBetween('created_at', [$start->utc(), $end->utc()])
             ->latest()
             ->paginate((int) config('lua.pagination.default'))
             ->withQueryString();

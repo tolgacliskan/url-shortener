@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Models\Link;
+use App\Models\LinkStat;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 
 uses(RefreshDatabase::class);
 
@@ -51,4 +55,50 @@ it('rejects a timezone the database would choke on', function () {
             'timezone' => 'Not/A_Timezone',
         ]))
         ->assertJsonValidationErrors('timezone');
+});
+
+/**
+ * At 22:07 UTC on the 29th it is already the 30th in Istanbul. Drawing the
+ * default range from the UTC date ended it a day early, and the evening's
+ * clicks fell outside it.
+ */
+it('ends the default range on today in the display timezone', function () {
+    config(['lua.timezone' => 'Europe/Istanbul']);
+    $this->travelTo(CarbonImmutable::parse('2026-09-29 22:07:00', 'UTC'));
+
+    $this->actingAs($this->user)
+        ->get(route('analytics.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('end', '2026-09-30')
+            ->where('start', '2026-09-01')
+        );
+});
+
+it('lists the events of today in the display timezone', function () {
+    config(['lua.timezone' => 'Europe/Istanbul']);
+    $this->travelTo(CarbonImmutable::parse('2026-09-29 22:07:00', 'UTC'));
+
+    $workspace = $this->user->currentWorkspace;
+    $link = Link::factory()->create(['workspace_id' => $workspace->id]);
+
+    LinkStat::factory()->create([
+        'workspace_id' => $workspace->id,
+        'link_id' => $link->id,
+        'created_at' => CarbonImmutable::parse('2026-09-29 21:52:00', 'UTC'),
+    ]);
+
+    $this->actingAs($this->user)
+        ->get(route('events.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('end', '2026-09-30')
+            ->has('table.data', 1)
+        );
+});
+
+it('shares the display timezone with the frontend', function () {
+    config(['lua.timezone' => 'Europe/Istanbul']);
+
+    $this->actingAs($this->user)
+        ->get(route('analytics.index'))
+        ->assertInertia(fn (Assert $page) => $page->where('timezone', 'Europe/Istanbul'));
 });
