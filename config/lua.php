@@ -43,6 +43,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Domain Announcements
+    |--------------------------------------------------------------------------
+    |
+    | Whether each custom domain is written to Redis as it is added, renamed
+    | or removed, for a proxy in front of the app to read. Nothing in the app
+    | reads these keys; an install whose web server already routes its own
+    | domains has no use for them, and no Redis to write them to.
+    |
+    */
+
+    'announce_domains' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Pagination
     |--------------------------------------------------------------------------
     |

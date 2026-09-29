@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Redis;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    config(['lua.announce_domains' => true]);
+
     $this->workspace = User::factory()->withWorkspace()->create()->currentWorkspace;
     $this->redis = Redis::connection('default');
 });
@@ -59,5 +61,16 @@ it('withdraws the announcement when the domain is removed', function () {
 
     // This is what actually stops links on that domain resolving: the row is
     // only soft-deleted, so the key is the part that matters.
+    expect($this->redis->exists('links.example.com'))->toBe(0);
+});
+
+it('announces nothing when announcing is off', function () {
+    config(['lua.announce_domains' => false]);
+
+    Domain::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'domain' => 'links.example.com',
+    ]);
+
     expect($this->redis->exists('links.example.com'))->toBe(0);
 });

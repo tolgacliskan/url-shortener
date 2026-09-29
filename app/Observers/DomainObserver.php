@@ -5,27 +5,17 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Domain;
+use Illuminate\Redis\Connections\Connection;
 use Illuminate\Support\Facades\Redis;
 
 class DomainObserver
 {
     /**
-     * The Redis instance.
-     */
-    protected $redis;
-
-    public function __construct()
-    {
-        $this->redis = Redis::connection('default');
-    }
-
-    /**
      * Handle the Domain "created" event.
      */
     public function created(Domain $domain): void
     {
-        $this->redis->set($domain->domain, 'lua.sha');
-
+        $this->redis()?->set($domain->domain, 'lua.sha');
     }
 
     /**
@@ -33,11 +23,17 @@ class DomainObserver
      */
     public function updated(Domain $domain): void
     {
+        $redis = $this->redis();
+
+        if (! $redis) {
+            return;
+        }
+
         // delete the old domain
-        $this->redis->del($domain->getOriginal('domain'));
+        $redis->del($domain->getOriginal('domain'));
 
         // set the new domain
-        $this->redis->set($domain->domain, 'lua.sha');
+        $redis->set($domain->domain, 'lua.sha');
     }
 
     /**
@@ -45,6 +41,15 @@ class DomainObserver
      */
     public function deleted(Domain $domain): void
     {
-        $this->redis->del($domain->domain);
+        $this->redis()?->del($domain->domain);
+    }
+
+    /**
+     * Connected only when announcing is on, so an install without Redis never
+     * tries to reach it.
+     */
+    private function redis(): ?Connection
+    {
+        return config('lua.announce_domains') ? Redis::connection('default') : null;
     }
 }
