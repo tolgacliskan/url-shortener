@@ -91,6 +91,7 @@ it('lists the events of today in the display timezone', function () {
         ->get(route('events.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('end', '2026-09-30')
+            ->where('start', '2026-09-01')
             ->has('table.data', 1)
         );
 });

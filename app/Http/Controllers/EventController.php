@@ -17,7 +17,7 @@ class EventController extends Controller
 
         $timezone = config('lua.timezone');
 
-        $start = Carbon::createFromFormat('Y-m-d', $request->start ?: now($timezone)->subDays(30)->format('Y-m-d'), $timezone)->startOfDay();
+        $start = Carbon::createFromFormat('Y-m-d', $request->start ?: now($timezone)->subDays(29)->format('Y-m-d'), $timezone)->startOfDay();
         $end = Carbon::createFromFormat('Y-m-d', $request->end ?: now($timezone)->format('Y-m-d'), $timezone)->endOfDay();
 
         $query = LinkStat::where('workspace_id', $workspace->id)
