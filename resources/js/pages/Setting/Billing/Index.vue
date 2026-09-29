@@ -15,7 +15,7 @@ import UsageMeter from '@/components/billing/UsageMeter.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { formatNumber } from '@/lib/metrics';
+import { formatLimit, formatNumber } from '@/lib/metrics';
 import { cn } from '@/lib/utils';
 import * as billingRoutes from '@/routes/setting/billing';
 import type { WorkspaceUsage } from '@/types';
@@ -136,9 +136,14 @@ const upgradeUrl = computed(() =>
                             <span
                                 class="text-xs text-muted-foreground tabular-nums"
                             >
-                                {{ formatNumber(metric.remaining) }} remaining
-                                of
-                                {{ formatNumber(metric.limit) }}
+                                <template v-if="metric.remaining === null"
+                                    >Unlimited</template
+                                >
+                                <template v-else>
+                                    {{ formatNumber(metric.remaining) }}
+                                    remaining of
+                                    {{ formatLimit(metric.limit) }}
+                                </template>
                             </span>
                         </div>
                     </button>

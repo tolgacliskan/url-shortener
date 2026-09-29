@@ -23,8 +23,8 @@ return new class extends Migration
             $table->integer('max_users')->nullable();
             $table->integer('max_tags')->nullable();
             $table->integer('max_domains')->nullable();
-            $table->integer('max_links');
-            $table->integer('max_events');
+            $table->integer('max_links')->nullable();
+            $table->integer('max_events')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

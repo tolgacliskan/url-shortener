@@ -35,4 +35,15 @@ class PlanFactory extends Factory
             'max_domains' => 500,
         ];
     }
+
+    public function unlimited(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'max_links' => null,
+            'max_events' => null,
+            'max_users' => null,
+            'max_tags' => null,
+            'max_domains' => null,
+        ]);
+    }
 }

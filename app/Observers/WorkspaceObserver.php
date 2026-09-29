@@ -29,9 +29,10 @@ class WorkspaceObserver
      */
     public function created(Workspace $workspace): void
     {
-        $allowance = (int) $workspace->plan?->max_tags;
+        $plan = $workspace->plan;
+        $allowance = $plan && $plan->max_tags === null ? null : max((int) $plan?->max_tags, 0);
 
-        foreach (array_slice(self::DEFAULT_TAGS, 0, max($allowance, 0)) as $tag) {
+        foreach (array_slice(self::DEFAULT_TAGS, 0, $allowance) as $tag) {
             Tag::create([...$tag, 'workspace_id' => $workspace->id]);
         }
     }

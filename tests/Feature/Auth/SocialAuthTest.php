@@ -57,6 +57,28 @@ it('refuses a provider we do not offer', function () {
     $this->get(route('auth.social', 'myspace'))->assertNotFound();
 });
 
+it('creates no account on first sign in when registration is closed', function () {
+    config(['lua.registration' => false]);
+    fakeSocialite(fakeSocialUser('g-1', 'ada@example.com'));
+
+    $this->get(route('auth.social.callback', 'google'))
+        ->assertRedirect(route('login'));
+
+    expect(User::where('email', 'ada@example.com')->exists())->toBeFalse();
+    $this->assertGuest();
+});
+
+it('still signs in an existing user when registration is closed', function () {
+    config(['lua.registration' => false]);
+    $user = User::factory()->withWorkspace()->create(['email' => 'ada@example.com']);
+    fakeSocialite(fakeSocialUser('g-1', 'ada@example.com'));
+
+    $this->get(route('auth.social.callback', 'google'))
+        ->assertRedirect(route('links.index'));
+
+    expect(auth()->id())->toBe($user->id);
+});
+
 it('creates an account on first sign in', function () {
     fakeSocialite(fakeSocialUser('g-1', 'ada@example.com'));
 

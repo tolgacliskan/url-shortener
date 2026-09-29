@@ -154,5 +154,21 @@ class PlanSeeder extends Seeder
             'max_domains' => 500,
         ]);
 
+        // Never offered: assigned by hand, and kept out of the billing page and
+        // the upgrade prompt by is_private.
+        Plan::create([
+            'name' => 'Unlimited',
+            'internal_id' => 'unlimited',
+            'price' => 0,
+            'is_monthly' => true,
+            'stripe_id' => null,
+            'access_level' => 6,
+            'is_private' => true,
+            'max_links' => null,
+            'max_events' => null,
+            'max_users' => null,
+            'max_tags' => null,
+            'max_domains' => null,
+        ]);
     }
 }

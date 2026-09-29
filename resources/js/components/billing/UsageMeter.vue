@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue';
 
-import { formatNumber } from '@/lib/metrics';
+import { formatLimit, formatNumber } from '@/lib/metrics';
 
 /**
  * One resource against its plan limit. The bar is the point: the number alone
@@ -11,8 +11,8 @@ defineProps<{
     icon: Component;
     label: string;
     used: number;
-    remaining: number;
-    limit: number;
+    remaining: number | null;
+    limit: number | null;
     percent: number;
 }>();
 </script>
@@ -40,8 +40,11 @@ defineProps<{
                 />
             </div>
             <span class="text-xs text-muted-foreground tabular-nums">
-                {{ formatNumber(remaining) }} remaining of
-                {{ formatNumber(limit) }}
+                <template v-if="remaining === null">Unlimited</template>
+                <template v-else>
+                    {{ formatNumber(remaining) }} remaining of
+                    {{ formatLimit(limit) }}
+                </template>
             </span>
         </div>
     </div>

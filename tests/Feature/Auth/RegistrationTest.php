@@ -17,6 +17,26 @@ test('registration screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
+test('the registration screen sends visitors to login when registration is closed', function () {
+    config(['lua.registration' => false]);
+
+    $this->get(route('register'))->assertRedirect(route('login'));
+});
+
+test('nobody can register when registration is closed', function () {
+    config(['lua.registration' => false]);
+
+    $this->post(route('register'), [
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertRedirect(route('login'));
+
+    $this->assertGuest();
+    expect(User::where('email', 'test@example.com')->exists())->toBeFalse();
+});
+
 test('new users can register', function () {
     $response = $this->post(route('register'), [
         'name' => 'Test User',

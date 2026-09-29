@@ -69,6 +69,10 @@ class SocialAuthController extends Controller
             return redirect()->to(route('links.index'));
         }
 
+        if (! config('lua.registration')) {
+            return redirect()->route('login')->with('status', 'There is no account for that email address.');
+        }
+
         $user = CreateUser::execute([
             'name' => $socialUser->getName() ?: $socialUser->getNickname(),
             'email' => $socialUser->getEmail(),

@@ -28,6 +28,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Registration
+    |--------------------------------------------------------------------------
+    |
+    | Whether anyone can open an account: the register page, and a first
+    | sign-in through Google or GitHub, which creates one too.
+    |
+    | Off, /register sends visitors to the login page and new users only come
+    | in through an invite or `php artisan lua:create-user`.
+    |
+    */
+
+    'registration' => (bool) env('REGISTRATION_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Pagination
     |--------------------------------------------------------------------------
     |

@@ -35,6 +35,9 @@ export const formatCount = (value: number): string =>
  */
 export const formatNumber = (value: number): string => full.format(value);
 
+export const formatLimit = (value: number | null): string =>
+    value === null ? 'Unlimited' : full.format(value);
+
 export const formatChange = (change: number | null): string =>
     change === null ? '—' : `${Math.abs(change).toFixed(1)}%`;
 

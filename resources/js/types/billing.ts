@@ -3,9 +3,10 @@
 // decision, and pre-formatting them made every consumer parse the string back.
 export type UsageMetric = {
     used: number;
-    limit: number;
+    // null means unlimited
+    limit: number | null;
     percent: number;
-    remaining: number;
+    remaining: number | null;
     reached_limit: boolean;
 };
 
@@ -57,11 +58,11 @@ export type Plan = {
     stripe_id: string;
     access_level: number;
     is_private: boolean;
-    max_links: number;
-    max_events: number;
-    max_users: number;
-    max_tags: number;
-    max_domains: number;
+    max_links: number | null;
+    max_events: number | null;
+    max_users: number | null;
+    max_tags: number | null;
+    max_domains: number | null;
 };
 
 export type BillingFrequency = 'monthly' | 'annually';

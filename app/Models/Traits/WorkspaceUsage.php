@@ -50,6 +50,7 @@ trait WorkspaceUsage
                 'name' => $this->plan->name,
                 'access_level' => $this->plan->access_level,
                 'next_tier' => Plan::where('access_level', '>', $this->plan->access_level)
+                    ->where('is_private', false)
                     ->orderBy('access_level', 'asc')
                     ->select('name')
                     ->first(),
@@ -61,11 +62,7 @@ trait WorkspaceUsage
             'current_billing_cycle_formatted' => $start->format('M j, Y').' - '.$end->format('M j, Y'),
             'next_reset' => $end->format('M j, Y'),
             'links' => [
-                'used' => $usedLinks,
-                'limit' => $this->plan->max_links,
-                'percent' => $this->plan->max_links === 0 ? 0 : round(($usedLinks / $this->plan->max_links) * 100),
-                'remaining' => $this->plan->max_links - $usedLinks,
-                'reached_limit' => $usedLinks >= $this->plan->max_links,
+                ...$this->allowance($usedLinks, $this->plan->max_links),
                 'chart' => [
                     'total' => $linksChartData->sum('count'),
                     'chart' => [
@@ -79,11 +76,7 @@ trait WorkspaceUsage
             ],
 
             'events' => [
-                'used' => $usedEvents,
-                'limit' => $this->plan->max_events,
-                'percent' => $this->plan->max_events === 0 ? 0 : round(($usedEvents / $this->plan->max_events) * 100),
-                'remaining' => $this->plan->max_events - $usedEvents,
-                'reached_limit' => $usedEvents >= $this->plan->max_events,
+                ...$this->allowance($usedEvents, $this->plan->max_events),
                 'chart' => [
                     'total' => $eventsChartData->sum('count'),
                     'chart' => [
@@ -96,27 +89,35 @@ trait WorkspaceUsage
                 ],
             ],
 
-            'domains' => [
-                'used' => $this->domains->count(),
-                'limit' => $this->plan->max_domains,
-                'percent' => $this->plan->max_domains === 0 ? 0 : round(($this->domains->count() / $this->plan->max_domains) * 100),
-                'remaining' => $this->plan->max_domains - $this->domains->count(),
-                'reached_limit' => $this->domains->count() >= $this->plan->max_domains,
-            ],
-            'tags' => [
-                'used' => $this->tags->count(),
-                'limit' => $this->plan->max_tags,
-                'percent' => $this->plan->max_tags === 0 ? 0 : round(($this->tags->count() / $this->plan->max_tags) * 100),
-                'remaining' => $this->plan->max_tags - $this->tags->count(),
-                'reached_limit' => $this->tags->count() >= $this->plan->max_tags,
-            ],
-            'users' => [
-                'used' => $this->users->count(),
-                'limit' => $this->plan->max_users,
-                'percent' => $this->plan->max_users === 0 ? 0 : round(($this->users->count() / $this->plan->max_users) * 100),
-                'remaining' => $this->plan->max_users - $this->users->count(),
-                'reached_limit' => $this->users->count() >= $this->plan->max_users,
-            ],
+            'domains' => $this->allowance($this->domains->count(), $this->plan->max_domains),
+            'tags' => $this->allowance($this->tags->count(), $this->plan->max_tags),
+            'users' => $this->allowance($this->users->count(), $this->plan->max_users),
+        ];
+    }
+
+    /**
+     * A null limit is unlimited: never reached, and nothing to measure against.
+     *
+     * @return array{used: int, limit: int|null, percent: int|float, remaining: int|null, reached_limit: bool}
+     */
+    private function allowance(int $used, ?int $limit): array
+    {
+        if ($limit === null) {
+            return [
+                'used' => $used,
+                'limit' => null,
+                'percent' => 0,
+                'remaining' => null,
+                'reached_limit' => false,
+            ];
+        }
+
+        return [
+            'used' => $used,
+            'limit' => $limit,
+            'percent' => $limit === 0 ? 0 : round(($used / $limit) * 100),
+            'remaining' => $limit - $used,
+            'reached_limit' => $used >= $limit,
         ];
     }
 }

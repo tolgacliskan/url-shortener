@@ -30,7 +30,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import WorkspaceMenuContent from '@/components/WorkspaceMenuContent.vue';
-import { formatNumber } from '@/lib/metrics';
+import { formatLimit, formatNumber } from '@/lib/metrics';
 import { index as analyticsIndex } from '@/routes/analytics';
 import { index as eventsIndex } from '@/routes/events';
 import { index as linksIndex } from '@/routes/links';
@@ -179,7 +179,7 @@ const workspaceNavItems: NavItem[] = [
                         <span
                             class="text-xs font-medium text-sidebar-foreground/60"
                             >{{ formatNumber(usage.links.used) }} of
-                            {{ formatNumber(usage.links.limit) }}</span
+                            {{ formatLimit(usage.links.limit) }}</span
                         >
                     </div>
                     <div class="overflow-hidden rounded-full bg-sidebar-accent">
@@ -204,7 +204,7 @@ const workspaceNavItems: NavItem[] = [
                         <span
                             class="text-xs font-medium text-sidebar-foreground/60"
                             >{{ formatNumber(usage.events.used) }} of
-                            {{ formatNumber(usage.events.limit) }}</span
+                            {{ formatLimit(usage.events.limit) }}</span
                         >
                     </div>
                     <div class="overflow-hidden rounded-full bg-sidebar-accent">

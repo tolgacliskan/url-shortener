@@ -24,8 +24,12 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(Request $request): Response
+    public function create(Request $request): Response|RedirectResponse
     {
+        if (! config('lua.registration')) {
+            return redirect()->route('login');
+        }
+
         $this->storeAttributionParameters($request);
 
         return Inertia::render('Auth/Register');
@@ -38,6 +42,10 @@ class RegisteredUserController extends Controller
      */
     public function store(RegisterRequest $request): RedirectResponse
     {
+        if (! config('lua.registration')) {
+            return redirect()->route('login');
+        }
+
         $user = CreateUser::execute([
             'name' => $request->name,
             'email' => $request->email,

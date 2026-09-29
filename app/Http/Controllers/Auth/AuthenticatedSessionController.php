@@ -21,6 +21,7 @@ class AuthenticatedSessionController extends Controller
     {
         return Inertia::render('Auth/Login', [
             'status' => session('status'),
+            'canRegister' => (bool) config('lua.registration'),
         ]);
     }
 

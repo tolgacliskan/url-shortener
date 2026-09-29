@@ -94,7 +94,7 @@ it('refuses the tag past the allowance', function () {
         ->toThrow(ValidationException::class, 'Your plan covers one tag');
 });
 
-it('seeds no more default tags than the plan allows', function (int $allowance, int $expected) {
+it('seeds no more default tags than the plan allows', function (?int $allowance, int $expected) {
     $plan = planWith(['max_tags' => $allowance]);
 
     // Seeding the full set regardless would hand the workspace a limit it is
@@ -106,7 +106,49 @@ it('seeds no more default tags than the plan allows', function (int $allowance, 
     'free' => [1, 1],
     'paid' => [25, 3],
     'none' => [0, 0],
+    'unlimited' => [null, 3],
 ]);
+
+it('never reaches the limit on an unlimited plan', function () {
+    $this->workspace->update(['plan_id' => Plan::factory()->unlimited()->create()->id]);
+
+    Link::factory()->count(3)->create(['workspace_id' => $this->workspace->id]);
+
+    CreateLink::execute($this->workspace, ['url' => 'https://example.com/four']);
+    CreateDomain::execute($this->workspace, ['domain' => 'links.example.com']);
+    CreateTag::execute($this->workspace, ['name' => 'Another', 'color' => '#000000']);
+
+    expect(Link::where('workspace_id', $this->workspace->id)->count())->toBe(4)
+        ->and(Domain::where('workspace_id', $this->workspace->id)->count())->toBe(1);
+});
+
+it('reports an unlimited allowance without a limit or a remainder', function () {
+    $this->workspace->update(['plan_id' => Plan::factory()->unlimited()->create()->id]);
+
+    Link::factory()->count(2)->create(['workspace_id' => $this->workspace->id]);
+
+    $usage = $this->workspace->refresh()->usage();
+
+    expect($usage['links'])->toMatchArray([
+        'used' => 2,
+        'limit' => null,
+        'percent' => 0,
+        'remaining' => null,
+        'reached_limit' => false,
+    ]);
+
+    foreach (['events', 'domains', 'tags', 'users'] as $metric) {
+        expect($usage[$metric]['limit'])->toBeNull()
+            ->and($usage[$metric]['reached_limit'])->toBeFalse();
+    }
+});
+
+it('keeps the private unlimited plan out of the upgrade prompt', function () {
+    $scale = Plan::where('internal_id', 'scale-monthly')->first();
+    $this->workspace->update(['plan_id' => $scale->id]);
+
+    expect($this->workspace->refresh()->usage()['plan']['next_tier'])->toBeNull();
+});
 
 it('ships a free workspace one tag and a hundred events', function () {
     $free = Plan::where('internal_id', 'free')->first();

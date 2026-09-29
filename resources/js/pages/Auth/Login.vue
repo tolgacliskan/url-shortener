@@ -12,6 +12,7 @@ import { request as forgotPasswordRoute } from '@/routes/password';
 
 defineProps<{
     status?: string;
+    canRegister: boolean;
 }>();
 
 const form = useForm({
@@ -85,7 +86,10 @@ const submit = () => {
             </Button>
         </form>
 
-        <div class="text-center text-sm text-muted-foreground">
+        <div
+            v-if="canRegister"
+            class="text-center text-sm text-muted-foreground"
+        >
             Don't have an account?
             <Link
                 :href="registerRoute()"
