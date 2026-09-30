@@ -26,8 +26,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.15",
         "posthog/posthog-php": "^4.13",
-        "resend/resend-laravel": "*",
-        "sendkit/sendkit-laravel": "^1.1",
+        "resend/resend-laravel": "^1.6",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/color": "^2.1",
         "stevebauman/location": "^7.0"
