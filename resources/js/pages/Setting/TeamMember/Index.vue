@@ -196,15 +196,16 @@ onMounted(() => {
                         <AlertDialogCancel @click="beingRemoveFromTeam = null"
                             >Cancel</AlertDialogCancel
                         >
-                        <AlertDialogAction
+                        <Button
                             @click="removeFromTeam"
                             class="bg-red-600 hover:bg-red-700"
                             :class="{
                                 'opacity-25': removeFromTeamForm.processing,
                             }"
+                            :disabled="removeFromTeamForm.processing"
                         >
                             Remove
-                        </AlertDialogAction>
+                        </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

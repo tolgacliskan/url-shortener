@@ -4,7 +4,6 @@ import { ref } from 'vue';
 
 import {
     AlertDialog,
-    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
@@ -12,6 +11,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -80,10 +80,11 @@ const deleteInvite = () => {
                     <AlertDialogCancel @click="beingDeleted = null"
                         >Cancel</AlertDialogCancel
                     >
-                    <AlertDialogAction
+                    <Button
                         @click="deleteInvite"
                         class="bg-red-600 hover:bg-red-700"
-                        >Delete</AlertDialogAction
+                        :disabled="deleteForm.processing"
+                        >Delete</Button
                     >
                 </AlertDialogFooter>
             </AlertDialogContent>
