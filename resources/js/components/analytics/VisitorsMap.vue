@@ -31,6 +31,7 @@ const mapboxToken = computed(
 const mapContainer = ref<HTMLElement | null>(null);
 const map = shallowRef<mapboxgl.Map | null>(null);
 const styleReady = ref(false);
+let requestedStyle: string | null = null;
 let resizeObserver: ResizeObserver | null = null;
 
 const { resolvedAppearance } = useAppearance();
@@ -163,6 +164,7 @@ const initializeMap = () => {
     }
 
     mapboxgl.accessToken = mapboxToken.value;
+    requestedStyle = mapStyle.value;
 
     const instance = new mapboxgl.Map({
         container,
@@ -176,6 +178,13 @@ const initializeMap = () => {
     });
 
     instance.on('style.load', () => {
+        if (requestedStyle !== mapStyle.value) {
+            requestedStyle = mapStyle.value;
+            instance.setStyle(requestedStyle);
+
+            return;
+        }
+
         styleReady.value = true;
         applyData();
     });
@@ -218,9 +227,18 @@ onMounted(watchForSize);
 // The container sits inside a tab, so it may not exist at mount.
 watch(mapContainer, () => watchForSize());
 
+// useAppearance settles the theme in its own onMounted, so the style can
+// change while the first one is still loading. Mapbox cannot diff against an
+// unfinished style and the rebuild throws inside addImages, leaving the map
+// without our layer; the style.load handler picks the change up instead.
 watch(mapStyle, (style) => {
+    if (!map.value || !styleReady.value) {
+        return;
+    }
+
     styleReady.value = false;
-    map.value?.setStyle(style);
+    requestedStyle = style;
+    map.value.setStyle(style);
 });
 
 watch(
