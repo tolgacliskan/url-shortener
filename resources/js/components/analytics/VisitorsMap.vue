@@ -99,7 +99,15 @@ const applyData = () => {
             type: 'fill',
             source: 'countries',
             'source-layer': 'country_boundaries',
-            filter: ['any', ['in', 'all', ['get', 'worldview']]],
+            // The tileset draws each country once per worldview, and many
+            // (Türkiye among them) carry no "all" feature at all, so filtering
+            // on "all" alone hides them. Pinning one worldview draws every
+            // country exactly once.
+            filter: [
+                'any',
+                ['==', 'all', ['get', 'worldview']],
+                ['in', 'US', ['get', 'worldview']],
+            ],
             paint: {
                 'fill-color': FILL,
                 'fill-opacity': 0,
@@ -198,7 +206,6 @@ const initializeMap = () => {
     resizeObserver.observe(container);
 
     map.value = instance;
-    (window as unknown as { __luaMap: mapboxgl.Map }).__luaMap = instance;
 };
 
 /**
