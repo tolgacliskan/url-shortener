@@ -198,6 +198,7 @@ const initializeMap = () => {
     resizeObserver.observe(container);
 
     map.value = instance;
+    (window as unknown as { __luaMap: mapboxgl.Map }).__luaMap = instance;
 };
 
 /**
