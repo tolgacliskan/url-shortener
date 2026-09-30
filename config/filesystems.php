@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DISK', 'r2'),
+    'default' => env('FILESYSTEM_DISK', 'public'),
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
     | may even configure multiple disks for the same driver. Examples for
     | most supported storage drivers are configured here for reference.
     |
-    | Supported drivers: "local", "ftp", "sftp", "s3"
+    | Supported drivers: "local", "ftp", "sftp"
     |
     */
 
@@ -45,48 +45,6 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
-        ],
-
-        's3' => [
-            'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
-        ],
-
-        'spaces' => [
-            'driver' => 's3',
-            'key' => env('DIGITALOCEAN_SPACES_KEY'),
-            'secret' => env('DIGITALOCEAN_SPACES_SECRET'),
-            'region' => env('DIGITALOCEAN_SPACES_REGION'),
-            'bucket' => env('DIGITALOCEAN_SPACES_BUCKET'),
-            'url' => env('DIGITALOCEAN_SPACES_URL'),
-            'endpoint' => env('DIGITALOCEAN_SPACES_ENDPOINT'),
-            'use_path_style_endpoint' => env('DIGITALOCEAN_SPACES_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => true,
-            'visibility' => 'public',
-        ],
-
-        // R2 speaks S3, but its endpoint is account-scoped rather than
-        // bucket-scoped, so path-style addressing is not optional here. The
-        // region is always "auto"; R2 has no regions to choose between.
-        'r2' => [
-            'driver' => 's3',
-            'key' => env('R2_ACCESS_KEY_ID'),
-            'secret' => env('R2_SECRET_ACCESS_KEY'),
-            'region' => env('R2_REGION', 'auto'),
-            'bucket' => env('R2_BUCKET'),
-            // The public bucket or custom domain files are served from. The
-            // endpoint above is the API; it is not reachable by a browser.
-            'url' => env('R2_URL'),
-            'endpoint' => env('R2_ENDPOINT'),
-            'use_path_style_endpoint' => true,
-            'throw' => true,
         ],
     ],
 

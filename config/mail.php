@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'sendkit'),
+    'default' => env('MAIL_MAILER', env('APP_ENV') === 'production' ? 'resend' : 'log'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     | your mailers below. You may also add additional mailers if needed.
     |
     | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
-    |            "postmark", "sendkit", "log", "array",
+    |            "postmark", "resend", "sendkit", "log", "array",
     |            "failover", "roundrobin"
     |
     */
@@ -61,6 +61,10 @@ return [
             // 'client' => [
             //     'timeout' => 5,
             // ],
+        ],
+
+        'resend' => [
+            'transport' => 'resend',
         ],
 
         'sendmail' => [
