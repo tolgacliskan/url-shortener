@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Cashier\Cashier;
 use PostHog\PostHog;
 
 class AppServiceProvider extends ServiceProvider
@@ -47,9 +46,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureUrlScheme();
-
-        // Cashier configuration
-        Cashier::useCustomerModel(Workspace::class);
 
         // Analytics
         $this->configurePostHog();

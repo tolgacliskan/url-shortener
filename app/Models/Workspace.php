@@ -15,14 +15,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Cashier\Billable;
-
-use function Illuminate\Events\queueable;
 
 #[ObservedBy(WorkspaceObserver::class)]
 class Workspace extends Model
 {
-    use Billable;
     use HasFactory;
     use HasMedia;
     use HasUuids;
@@ -40,17 +36,6 @@ class Workspace extends Model
         'plan_id',
         'logo',
         'billing_cycle_start',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'pm_last_four',
-        'pm_type',
-        'stripe_id',
     ];
 
     /**
@@ -74,26 +59,6 @@ class Workspace extends Model
         'has_logo',
         'logo_url',
     ];
-
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::updated(queueable(function (Workspace $workspace) {
-            if ($workspace->hasStripeId()) {
-                $workspace->syncStripeCustomerDetails();
-            }
-        }));
-    }
-
-    /**
-     * Get the customer name that should be synced to Stripe.
-     */
-    public function stripeEmail(): ?string
-    {
-        return $this->owner?->email;
-    }
 
     public function getHasLogoAttribute(): bool
     {

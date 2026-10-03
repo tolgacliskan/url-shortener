@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-Artisan::command('lua:create-user {email} {--name=} {--plan=}', function (string $email): int {
+Artisan::command('create-user {email} {--name=} {--plan=}', function (string $email): int {
     $plan = null;
 
     if ($this->option('plan')) {

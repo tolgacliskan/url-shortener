@@ -9,18 +9,18 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 it('creates a verified user with a personal workspace', function () {
-    $this->artisan('lua:create-user', ['email' => 'kitchiko@example.com', '--name' => 'Kitchiko'])
+    $this->artisan('create-user', ['email' => 'kitchiko@example.com', '--name' => 'Kitchiko'])
         ->expectsQuestion('Password', 'a-long-password')
         ->assertSuccessful();
 
     $user = User::where('email', 'kitchiko@example.com')->firstOrFail();
 
     expect($user->email_verified_at)->not->toBeNull()
-        ->and($user->currentWorkspace)->not->toBeNull();
+        ->and($user->currentWorkspace->plan->internal_id)->toBe('unlimited');
 });
 
 it('puts the workspace on the plan it is given', function () {
-    $this->artisan('lua:create-user', ['email' => 'kitchiko@example.com', '--name' => 'Kitchiko', '--plan' => 'unlimited'])
+    $this->artisan('create-user', ['email' => 'kitchiko@example.com', '--name' => 'Kitchiko', '--plan' => 'unlimited'])
         ->expectsQuestion('Password', 'a-long-password')
         ->assertSuccessful();
 
@@ -30,7 +30,7 @@ it('puts the workspace on the plan it is given', function () {
 });
 
 it('refuses a plan that does not exist', function () {
-    $this->artisan('lua:create-user', ['email' => 'kitchiko@example.com', '--plan' => 'nope'])
+    $this->artisan('create-user', ['email' => 'kitchiko@example.com', '--plan' => 'nope'])
         ->assertFailed();
 
     expect(User::where('email', 'kitchiko@example.com')->exists())->toBeFalse();
@@ -39,7 +39,7 @@ it('refuses a plan that does not exist', function () {
 it('refuses an email that is already taken', function () {
     User::factory()->withWorkspace()->create(['email' => 'kitchiko@example.com']);
 
-    $this->artisan('lua:create-user', ['email' => 'kitchiko@example.com', '--name' => 'Kitchiko'])
+    $this->artisan('create-user', ['email' => 'kitchiko@example.com', '--name' => 'Kitchiko'])
         ->expectsQuestion('Password', 'a-long-password')
         ->assertFailed();
 

@@ -24,8 +24,7 @@ class WorkspacePolicy
 
     /**
      * The owner cannot be removed or demoted out of their own workspace —
-     * that is what ownership means, and it is what keeps stripeEmail() and
-     * billing pointing at someone.
+     * that is what ownership means.
      */
     public function manageMember(User $user, Workspace $workspace, User $member): bool
     {

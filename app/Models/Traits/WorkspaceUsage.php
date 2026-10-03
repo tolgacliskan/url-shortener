@@ -40,12 +40,6 @@ trait WorkspaceUsage
             ->get();
 
         return [
-            'billing' => [
-                'has_subscription' => $this->subscribed('default'),
-                'past_due' => $this->hasIncompletePayment('default') ?? null,
-                'canceled' => $this->subscription('default') ? $this->subscription('default')->canceled() : false,
-                'active' => $this->subscribed('default'),
-            ],
             'plan' => [
                 'name' => $this->plan->name,
                 'access_level' => $this->plan->access_level,

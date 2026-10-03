@@ -4,7 +4,6 @@ import {
     IconBrightnessUp,
     IconBuilding,
     IconCheck,
-    IconCreditCard,
     IconDeviceDesktop,
     IconLogout,
     IconMoon,
@@ -30,7 +29,6 @@ import { useAppearance } from '@/composables/useAppearance';
 import { logout } from '@/routes';
 import { edit as accountEdit } from '@/routes/setting/account';
 import { edit as authenticationEdit } from '@/routes/setting/authentication';
-import { index as billingIndex } from '@/routes/setting/billing';
 import { edit as workspaceEdit } from '@/routes/setting/workspace';
 import {
     create as workspacesCreate,
@@ -98,12 +96,6 @@ const switchWorkspace = (workspaceId: string) => {
             <Link class="block w-full cursor-pointer" :href="workspaceEdit()">
                 <IconBuilding class="size-4" />
                 Workspace
-            </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem as-child>
-            <Link class="block w-full cursor-pointer" :href="billingIndex()">
-                <IconCreditCard class="size-4" />
-                Billing
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>

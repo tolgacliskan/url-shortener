@@ -24,12 +24,6 @@ export type UsageMetricWithChart = UsageMetric & {
 };
 
 export type WorkspaceUsage = {
-    billing: {
-        has_subscription: boolean;
-        past_due: boolean | null;
-        canceled: boolean;
-        active: boolean;
-    };
     plan: {
         name: string;
         access_level: number;

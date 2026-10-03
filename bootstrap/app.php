@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\Api\LoadWorkspaceFromToken;
-use App\Http\Middleware\Billing;
 use App\Http\Middleware\CustomDomain;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetWorkspace;
@@ -31,10 +30,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // The api group carries no rate limit of its own in Laravel 11+.
         $middleware->throttleApi();
-        $middleware->preventRequestForgery(except: [
-            'stripe/*',
-        ]);
-
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/links');
 
@@ -44,7 +39,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'billing' => Billing::class,
             'set-workspace' => SetWorkspace::class,
             'custom-domain' => CustomDomain::class,
             'workspace.token' => LoadWorkspaceFromToken::class,

@@ -18,10 +18,10 @@ class CreateWorkspace
      */
     public static function execute(User $user, array $data): Workspace
     {
-        $plan = Plan::where('internal_id', 'free')->first();
+        $plan = Plan::where('internal_id', 'unlimited')->first();
 
         if (! $plan) {
-            throw new RuntimeException('The free plan is missing; run the PlanSeeder.');
+            throw new RuntimeException('The unlimited plan is missing; run the PlanSeeder.');
         }
 
         return DB::transaction(function () use ($user, $data, $plan): Workspace {

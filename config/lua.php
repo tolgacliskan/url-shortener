@@ -35,7 +35,7 @@ return [
     | sign-in through Google or GitHub, which creates one too.
     |
     | Off, /register sends visitors to the login page and new users only come
-    | in through an invite or `php artisan lua:create-user`.
+    | in through an invite or `php artisan create-user`.
     |
     */
 

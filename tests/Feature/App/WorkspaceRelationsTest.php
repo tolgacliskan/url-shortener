@@ -38,16 +38,6 @@ it('reaches everything the workspace holds', function () {
         ->and($workspace->users->pluck('id')->all())->toBe([$this->user->id]);
 });
 
-it('points billing at the owner', function () {
-    expect($this->workspace->owner->is($this->user))->toBeTrue()
-        ->and($this->workspace->stripeEmail())->toBe($this->user->email);
-});
-
-it('has no billing email once the owner account is gone', function () {
-    // owner_id is nullOnDelete, so this is null rather than a fatal — which is
-    // what the old pivot lookup did.
-    $this->user->workspaces()->detach();
-    $this->user->delete();
-
-    expect($this->workspace->fresh()->stripeEmail())->toBeNull();
+it('belongs to its owner', function () {
+    expect($this->workspace->owner->is($this->user))->toBeTrue();
 });

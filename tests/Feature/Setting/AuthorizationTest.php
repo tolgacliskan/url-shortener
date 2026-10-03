@@ -61,8 +61,7 @@ it('will not let anyone remove the owner', function () {
     $admin = User::factory()->create(['current_workspace_id' => $this->workspace->id]);
     $admin->workspaces()->attach($this->workspace->id, ['role' => Role::ROLE_ADMIN->value]);
 
-    // Not even an admin: billing points at the owner, so the workspace cannot
-    // be left without one.
+    // Not even an admin: the workspace cannot be left without an owner.
     $this->actingAs($admin)
         ->delete(route('setting.team-members.destroy', $this->owner->id))
         ->assertForbidden();

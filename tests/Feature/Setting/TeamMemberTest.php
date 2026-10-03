@@ -182,8 +182,7 @@ it('sends you to create one after leaving your last workspace', function () {
 it('will not let the owner walk away from their own workspace', function () {
     joinWorkspace($this->workspace);
 
-    // Billing and stripeEmail() point at the owner; the workspace cannot be
-    // left without one.
+    // The workspace cannot be left without an owner.
     $this->actingAs($this->owner)
         ->delete(route('setting.team-members.leave'))
         ->assertRedirect();

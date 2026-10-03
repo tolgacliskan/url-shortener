@@ -11,7 +11,6 @@ use App\Http\Controllers\Setting\AccountController;
 use App\Http\Controllers\Setting\ApiTokenController;
 // setting
 use App\Http\Controllers\Setting\AuthenticationController;
-use App\Http\Controllers\Setting\BillingController;
 use App\Http\Controllers\Setting\DomainController;
 use App\Http\Controllers\Setting\InviteController;
 use App\Http\Controllers\Setting\McpController as SettingMcpController;
@@ -28,15 +27,14 @@ Route::group(
             'auth',
             'verified',
             'set-workspace',
-            'billing',
         ],
     ],
     function () {
 
         // workspaces
-        Route::get('/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create')->withoutMiddleware(['billing']);
-        Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store')->withoutMiddleware(['billing']);
-        Route::put('/workspaces/update-current', [WorkspaceController::class, 'setCurrentStore'])->name('workspaces.update-current')->withoutMiddleware(['billing']);
+        Route::get('/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
+        Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
+        Route::put('/workspaces/update-current', [WorkspaceController::class, 'setCurrentStore'])->name('workspaces.update-current');
 
         // links
         Route::get('/links', [LinkController::class, 'index'])->name('links.index');
@@ -90,13 +88,6 @@ Route::group(
             Route::put('/domains/{id}', [DomainController::class, 'update'])->name('setting.domains.update');
             Route::delete('/domains/{id}', [DomainController::class, 'destroy'])->name('setting.domains.destroy');
             Route::get('/domains/{id}/validate-dns', [DomainController::class, 'validateDns'])->name('setting.domains.validate-dns');
-
-            // billing
-            Route::get('/billing', [BillingController::class, 'index'])->name('setting.billing.index');
-            Route::get('/billing/upgrade', [BillingController::class, 'upgrade'])->name('setting.billing.upgrade');
-            Route::get('/billing/checkout/{planId}', [BillingController::class, 'checkout'])->name('setting.billing.checkout');
-            Route::get('/billing/portal', [BillingController::class, 'billingPortal'])->name('setting.billing.portal');
-            Route::inertia('/billing/checkout-success', 'Setting/Billing/Success')->name('setting.billing.checkout-success');
 
             // users
             Route::get('/users', [TeamMemberController::class, 'index'])->name('setting.team-members.index');
