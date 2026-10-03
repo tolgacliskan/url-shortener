@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Inertia\Testing\AssertableInertia as Assert;
 
 uses(RefreshDatabase::class);
 
@@ -155,4 +156,16 @@ it('ships a free workspace one tag and a hundred events', function () {
 
     expect($free->max_tags)->toBe(1)
         ->and($free->max_events)->toBe(100);
+});
+
+it('shares the workspace usage with every signed-in page', function () {
+    $this->workspace->update(['plan_id' => Plan::factory()->unlimited()->create()->id]);
+
+    Link::factory()->create(['workspace_id' => $this->workspace->id]);
+
+    $this->actingAs($this->user)
+        ->get(route('links.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('usage.links.used', 1)
+            ->where('usage.links.limit', null));
 });

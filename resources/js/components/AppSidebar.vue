@@ -6,6 +6,7 @@ import {
     IconChevronRight,
     IconClick,
     IconKey,
+    IconLink,
     IconPlugConnected,
     IconTag,
     IconUsers,
@@ -29,6 +30,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import WorkspaceMenuContent from '@/components/WorkspaceMenuContent.vue';
+import { formatLimit, formatNumber } from '@/lib/metrics';
 import { index as analyticsIndex } from '@/routes/analytics';
 import { index as eventsIndex } from '@/routes/events';
 import { index as linksIndex } from '@/routes/links';
@@ -41,6 +43,15 @@ import { type NavItem } from '@/types';
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+const usage = computed(() => page.props.usage);
+const usageMetrics = computed(() =>
+    usage.value
+        ? [
+              { label: 'Links', icon: IconLink, ...usage.value.links },
+              { label: 'Events', icon: IconClick, ...usage.value.events },
+          ]
+        : [],
+);
 
 const navItems: NavItem[] = [
     {
@@ -145,6 +156,43 @@ const workspaceNavItems: NavItem[] = [
             <NavMain :items="workspaceNavItems" label="Workspace" />
         </SidebarContent>
 
+        <div
+            v-if="usage"
+            class="px-3 py-3 group-data-[collapsible=icon]:hidden"
+        >
+            <span class="text-xs text-sidebar-foreground/60">Usage</span>
+
+            <div class="mt-3 flex flex-col gap-3">
+                <div v-for="metric in usageMetrics" :key="metric.label">
+                    <div class="mb-1.5 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <component
+                                :is="metric.icon"
+                                class="size-3.5 text-sidebar-foreground/60"
+                            />
+                            <span
+                                class="text-xs font-medium text-sidebar-foreground/60"
+                                >{{ metric.label }}</span
+                            >
+                        </div>
+                        <span
+                            class="text-xs font-medium text-sidebar-foreground/60"
+                            >{{ formatNumber(metric.used) }} /
+                            {{ formatLimit(metric.limit) }}</span
+                        >
+                    </div>
+                    <div
+                        v-if="metric.limit !== null"
+                        class="overflow-hidden rounded-full bg-sidebar-accent"
+                    >
+                        <div
+                            class="h-1 rounded-full bg-primary"
+                            :style="{ width: `${metric.percent}%` }"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
     </Sidebar>
     <slot />
 </template>

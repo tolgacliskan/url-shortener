@@ -60,6 +60,7 @@ class HandleInertiaRequests extends Middleware
                     ]));
                 },
             ],
+            'usage' => fn () => $request->user()?->currentWorkspace?->usage(),
             'socialProviders' => collect(SocialAuthProvider::enabled())
                 ->map(fn (SocialAuthProvider $provider) => [
                     'provider' => $provider->value,

@@ -1,6 +1,7 @@
 import type { AxiosInstance } from 'axios';
 
 import type { Auth } from '@/types/auth';
+import type { WorkspaceUsage } from '@/types/billing';
 
 declare global {
     interface Window {
@@ -34,6 +35,7 @@ declare module '@inertiajs/core' {
             env: string;
             locale: string;
             website: string;
+            usage: WorkspaceUsage | null;
             [key: string]: unknown;
         };
     }
