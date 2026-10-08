@@ -103,8 +103,8 @@ RUN composer install \
 # the stages would mean the vite phase has no PHP available.
 #
 # Vite inlines VITE_* values into the JS bundle at build time. Pass them
-# as build args (--build-arg VITE_REVERB_APP_KEY=...) so the bundle reaches
-# the browser with the correct Reverb/PostHog config. Runtime env vars on
+# as build args (--build-arg VITE_POSTHOG_API_KEY=...) so the bundle reaches
+# the browser with the correct PostHog config. Runtime env vars on
 # the container have no effect on the already-compiled bundle.
 # ----------------------------------------------------------------------------
 FROM composer-deps AS asset-build
@@ -116,10 +116,6 @@ ARG VITE_APP_NAME=Lua
 # Defaults to the same stub origin APP_URL uses below. Only the path is read
 # from it, so it does not need to be the domain the image is finally served on.
 ARG VITE_APP_URL=http://localhost
-ARG VITE_REVERB_APP_KEY=
-ARG VITE_REVERB_HOST=localhost
-ARG VITE_REVERB_PORT=8080
-ARG VITE_REVERB_SCHEME=http
 ARG VITE_POSTHOG_ENABLED=false
 ARG VITE_POSTHOG_API_KEY=
 ARG VITE_POSTHOG_HOST=https://us.i.posthog.com
@@ -131,10 +127,6 @@ ENV APP_KEY=base64:c3R1Yi13YXlmaW5kZXItZ2VuLWtleS1mb3ItYnVpbGRpbmctYXNzZXRzMA== 
     APP_URL=http://localhost \
     VITE_APP_NAME=${VITE_APP_NAME} \
     VITE_APP_URL=${VITE_APP_URL} \
-    VITE_REVERB_APP_KEY=${VITE_REVERB_APP_KEY} \
-    VITE_REVERB_HOST=${VITE_REVERB_HOST} \
-    VITE_REVERB_PORT=${VITE_REVERB_PORT} \
-    VITE_REVERB_SCHEME=${VITE_REVERB_SCHEME} \
     VITE_POSTHOG_ENABLED=${VITE_POSTHOG_ENABLED} \
     VITE_POSTHOG_API_KEY=${VITE_POSTHOG_API_KEY} \
     VITE_POSTHOG_HOST=${VITE_POSTHOG_HOST}
@@ -180,7 +172,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENV LUA_TARGET=dev
 
-EXPOSE 80 5173 8080
+EXPOSE 80 5173
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
     CMD curl -fsS http://127.0.0.1/up || exit 1
@@ -227,7 +219,7 @@ RUN composer dump-autoload --optimize --classmap-authoritative --no-scripts \
 
 ENV LUA_TARGET=production
 
-EXPOSE 80 8080
+EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -fsS http://127.0.0.1/up || exit 1
