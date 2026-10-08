@@ -47,6 +47,7 @@ RUN apk add --no-cache \
         libzip-dev \
         oniguruma-dev \
         icu-dev \
+        imagemagick-dev \
         linux-headers \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
@@ -61,8 +62,10 @@ RUN apk add --no-cache \
         pcntl \
         intl \
         sockets \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+    # simple-qrcode renders PNG QR codes only through Imagick; 3.8.1 is the
+    # first imagick release that compiles against PHP 8.5.
+    && pecl install redis imagick-3.8.1 \
+    && docker-php-ext-enable redis imagick \
     && apk del $PHPIZE_DEPS \
     && rm -rf /tmp/* /var/cache/apk/*
 
